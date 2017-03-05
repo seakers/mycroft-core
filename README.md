@@ -1,5 +1,17 @@
-Mycroft [![Build Status](https://travis-ci.org/MycroftAI/mycroft-core.svg?branch=master)](https://travis-ci.org/MycroftAI/mycroft-core)
+~~Mycroft~~ Daphne
 ==========
+
+Extra instructions for Dpahne
+----------
+
+Once the repository is cloned,
+
+```
+cd cloned_repo
+mkdir daphne
+cd daphne
+git clone git@github.com:TScottJ/OpenEphyra.git
+```
 
 Full docs at: https://docs.mycroft.ai
 
