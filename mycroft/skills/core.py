@@ -96,6 +96,9 @@ def open_intent_envelope(message):
 def load_skill(skill_descriptor, emitter):
     try:
         logger.info("ATTEMPTING TO LOAD SKILL: " + skill_descriptor["name"])
+        if skill_descriptor['name'] in BLACKLISTED_SKILLS:
+            logger.info("SKILL IS BLACKLISTED " + skill_descriptor["name"])
+            return None
         skill_module = imp.load_module(
             skill_descriptor["name"] + MainModule, *skill_descriptor["info"])
         if (hasattr(skill_module, 'create_skill') and
@@ -180,6 +183,7 @@ class MycroftSkill(object):
         self.file_system = FileSystemAccess(join('skills', name))
         self.registered_intents = []
         self.log = getLogger(name)
+        self.reload_skill = True
 
     @property
     def location(self):
