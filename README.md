@@ -8,9 +8,8 @@ Once the repository is cloned,
 
 ```
 cd cloned_repo
-mkdir daphne
-cd daphne
-git clone git@github.com:TScottJ/OpenEphyra.git
+virtualenv venv3 # run with python3
+pip install scrapy
 ```
 ----------
 
