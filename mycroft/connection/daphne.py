@@ -3,7 +3,7 @@ import json
 from websocket import WebSocket, create_connection
 from mycroft.configuration import ConfigurationManager
 
-config = ConfigurationManager.get().get("daphne")
+config = ConfigurationManager.get().get("daphne").get("websocket")
 
 
 class DaphneWebsocketClient(WebSocket):
