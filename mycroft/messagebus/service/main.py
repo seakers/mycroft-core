@@ -21,7 +21,6 @@ import tornado.web as web
 from mycroft.configuration import ConfigurationManager
 from mycroft.messagebus.service.ws import WebsocketEventHandler
 from mycroft.util import validate_param
-from mycroft.connection.daphne import DaphneWebsocketClient
 
 __author__ = 'seanfitz', 'jdorleans'
 
@@ -45,9 +44,6 @@ def main():
     routes = [
         (route, WebsocketEventHandler)
     ]
-    
-    daphneWS = DaphneWebsocketClient()
-    daphneWS.send_message("connection made from mycroft")
     
     application = web.Application(routes, **settings)
     application.listen(port, host)

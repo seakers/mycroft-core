@@ -39,6 +39,7 @@ from mycroft.tts import TTSFactory                          # nopep8
 from mycroft.util import get_ipc_directory                  # nopep8
 from mycroft.util.log import getLogger                      # nopep8
 from mycroft.configuration import ConfigurationManager      # nopep8
+from mycroft.connection.daphne import DaphneWebsocketClient
 
 tts = None
 ws = None
@@ -635,7 +636,8 @@ def main(stdscr):
         scr.refresh()
         scr = None
         pass
-
+    
+    
 
 def simple_cli():
     global ws
@@ -643,6 +645,15 @@ def simple_cli():
     event_thread = Thread(target=connect)
     event_thread.setDaemon(True)
     event_thread.start()
+    
+    daphneWS = DaphneWebsocketClient()
+    ws.emit(
+        Message("recognizer_loop:utterance",{'utterances':"Mycroft, What time is it?"})
+    )
+    daphne_thread = Thread(target=daphneWS.run_forever)
+    daphne_thread.setDaemon(True)
+    daphne_thread.start()
+    
     try:
         while True:
             # TODO: Change this mechanism
