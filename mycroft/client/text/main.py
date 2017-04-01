@@ -663,17 +663,6 @@ def simple_cli():
         sys.exit()
         
 
-        
-        
-logger("This is a test message generated from /client/test/main.py")
-
-
-
-
-
-
-
-
 # Find the correct log path relative to this script
 scriptPath = os.path.dirname(os.path.realpath(__file__))
 localLogPath = os.path.realpath(scriptPath+"/../../../scripts/logs")

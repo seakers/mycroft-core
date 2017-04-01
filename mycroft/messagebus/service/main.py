@@ -45,12 +45,15 @@ def main():
     routes = [
         (route, WebsocketEventHandler)
     ]
+    
+    daphneWS = DaphneWebsocketClient()
+    daphneWS.send_message("connection made from mycroft")
+    
     application = web.Application(routes, **settings)
     application.listen(port, host)
     ioloop.IOLoop.instance().start()
 
-    daphneWS = DaphneWebsocketClient()
-    daphneWS.send_message("connection made from mycroft")
+
 
 if __name__ == "__main__":
     main()

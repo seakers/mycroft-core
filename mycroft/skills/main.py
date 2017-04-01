@@ -153,7 +153,7 @@ def main():
     ws.on('message', echo)
     ws.once('open', load_watch_skills)
     ws.run_forever()
-
+    
 
 if __name__ == "__main__":
     try:
