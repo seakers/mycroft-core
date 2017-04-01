@@ -16,3 +16,6 @@ scripts/logs/*
 logs/*
 daphne/OpenEphyra/*
 venv3/*
+*.DS_Store
+mycroft/skills/daphne-skills/
+
