@@ -661,6 +661,18 @@ def simple_cli():
         logger.exception(e)
         event_thread.exit()
         sys.exit()
+        
+
+        
+        
+logger("This is a test message generated from /client/test/main.py")
+
+
+
+
+
+
+
 
 # Find the correct log path relative to this script
 scriptPath = os.path.dirname(os.path.realpath(__file__))
