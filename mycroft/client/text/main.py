@@ -41,11 +41,14 @@ from mycroft.util.log import getLogger                      # nopep8
 from mycroft.configuration import ConfigurationManager      # nopep8
 from mycroft.connection.daphne import DaphneWebsocketClient
 import websocket
+import requests
 
 tts = None
 ws = None
 mutex = Lock()
 logger = getLogger("CLIClient")
+
+config = ConfigurationManager.get().get("daphne").get("http")
 
 utterances = []
 chat = []
@@ -193,10 +196,18 @@ def handle_speak(event):
     global chat
     global tts
     mutex.acquire()
+    
+    port = config.get("port")
+    host = config.get("host")
+    url = 'http://' + host +':'+ str(port) +'/server/chat/update-system-response/'
+    utterance = event.data.get('utterance')
+    requests.post(url,data={'content':utterance})
+    
+    
     if not bQuiet:
         ws.emit(Message("recognizer_loop:audio_output_start"))
     try:
-        utterance = event.data.get('utterance')
+        
         if bSimple:
             print(">> " + utterance)
         else:
