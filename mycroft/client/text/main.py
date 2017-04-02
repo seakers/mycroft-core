@@ -40,6 +40,7 @@ from mycroft.util import get_ipc_directory                  # nopep8
 from mycroft.util.log import getLogger                      # nopep8
 from mycroft.configuration import ConfigurationManager      # nopep8
 from mycroft.connection.daphne import DaphneWebsocketClient
+import websocket
 
 tts = None
 ws = None
@@ -515,7 +516,7 @@ def main(stdscr):
     scr = stdscr
     init_screen()
 
-    ws = WebsocketClient()
+    
     ws.on('speak', handle_speak)
     event_thread = Thread(target=connect)
     event_thread.setDaemon(True)
@@ -641,19 +642,12 @@ def main(stdscr):
 
 def simple_cli():
     global ws
-    ws = WebsocketClient()
+        
     event_thread = Thread(target=connect)
     event_thread.setDaemon(True)
     event_thread.start()
     
-    daphneWS = DaphneWebsocketClient()
-    ws.emit(
-        Message("recognizer_loop:utterance",{'utterances':"Mycroft, What time is it?"})
-    )
-    daphne_thread = Thread(target=daphneWS.run_forever)
-    daphne_thread.setDaemon(True)
-    daphne_thread.start()
-    
+
     try:
         while True:
             # TODO: Change this mechanism
@@ -689,7 +683,30 @@ start_log_monitor("/var/log/mycroft-speech-client.log")
 # Monitor IPC file containing microphone level info
 start_mic_monitor(os.path.join(get_ipc_directory(), "mic_level"))
 
+
+
+
+
 if __name__ == "__main__":
+    global ws
+    ws = WebsocketClient()
+    
+    daphneWS = DaphneWebsocketClient()
+    daphneWS.set_mycroft_ws(ws)
+    
+    
+    def emit_message_mycroft(ws,message):
+        ws.emit(Message("recognizer_loop:utterance",
+                {'utterances': [message],
+                'lang': 'en-us'}))
+        chat.append(message)
+    daphneWS.on("message",emit_message_mycroft)
+    
+    
+    daphne_thread = Thread(target=daphneWS.run_forever)
+    daphne_thread.setDaemon(True)
+    daphne_thread.start()
+    
     if bSimple:
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
@@ -697,3 +714,4 @@ if __name__ == "__main__":
     else:
         curses.wrapper(main)
         curses.endwin()
+    
