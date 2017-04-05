@@ -285,7 +285,7 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
                 byte_data = byte_data[len(chunk):] + chunk
 
             buffers_since_check += 1.0
-            if buffers_since_check < buffers_per_check:
+            if buffers_since_check > buffers_per_check:
                 buffers_since_check -= buffers_per_check
                 said_wake_word = self.wake_word_in_audio(byte_data + silence)
 
@@ -307,8 +307,8 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
         """
         assert isinstance(source, AudioSource), "Source must be an AudioSource"
 
-        bytes_per_sec = source.SAMPLE_RATE * source.SAMPLE_WIDTH
-        sec_per_buffer = float(source.CHUNK) / bytes_per_sec
+#        bytes_per_sec = source.SAMPLE_RATE * source.SAMPLE_WIDTH
+        sec_per_buffer = float(source.CHUNK) / source.SAMPLE_RATE
 
         logger.debug("Waiting for wake word...")
         self.wait_until_wake_word(source, sec_per_buffer)
