@@ -1,4 +1,4 @@
-~~Mycroft~~ Daphne
+~~Mycroft~~ Daphne [![Build Status](https://travis-ci.org/MycroftAI/mycroft-core.svg?branch=master)](https://travis-ci.org/MycroftAI/mycroft-core) [![Coverage Status](https://coveralls.io/repos/github/MycroftAI/mycroft-core/badge.svg?branch=dev)](https://coveralls.io/github/MycroftAI/mycroft-core?branch=dev)
 ==========
 
 Extra instructions for Daphne

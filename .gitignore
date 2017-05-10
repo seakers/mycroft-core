@@ -2,7 +2,6 @@
 *.pyc
 *.swp
 *~
-msm
 mimic
 pocketsphinx-python
 *.egg-info/
@@ -15,5 +14,6 @@ MANIFEST.in
 setup.py
 scripts/logs/*
 logs/*
-daphne/OpenEphyra/*
 venv3/*
+mycroft/audio-accuracy-test/data/*
+.coverage
