@@ -199,9 +199,9 @@ def handle_speak(event):
     
     port = config.get("port")
     host = config.get("host")
-    url = 'http://' + host +':'+ str(port) +'/server/chat/update-system-response/'
+    url = 'http://' + host +':'+ str(port) +'/api/ifeed/update-system-response/'
     utterance = event.data.get('utterance')
-    requests.post(url,data={'content':utterance})
+    requests.post(url,data={'utterance':utterance})
     
     
     if not bQuiet:
@@ -711,6 +711,7 @@ if __name__ == "__main__":
                 {'utterances': [message],
                 'lang': 'en-us'}))
         chat.append(message)
+        
     daphneWS.on("message",emit_message_mycroft)
     
     
