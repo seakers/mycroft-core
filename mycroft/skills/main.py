@@ -18,7 +18,6 @@
 
 import json
 import os
-import signal
 import subprocess
 import sys
 import time
@@ -35,6 +34,7 @@ from mycroft.skills.core import load_skill, create_skill_descriptor, \
 from mycroft.skills.intent_service import IntentService
 from mycroft.util import connected
 from mycroft.util.log import getLogger
+import mycroft.dialog
 
 # ignore DIGCHLD to terminate subprocesses correctly
 signal.signal(signal.SIGCHLD, signal.SIG_IGN)
@@ -60,16 +60,25 @@ def connect():
 
 
 def install_default_skills(speak=True):
+    """
+        Install default skill set using msm.
+
+        Args:
+            speak (optional): Enable response for success. Default True
+    """
     if exists(MSM_BIN):
-        p = subprocess.Popen(MSM_BIN + " default", stderr=subprocess.STDOUT,
-                             stdout=subprocess.PIPE, shell=True)
-        t = p.communicate()[0]
-        if t.splitlines()[-1] == "Installed!" and speak:
+        res = subprocess.call(MSM_BIN + " default", stderr=subprocess.STDOUT,
+                              stdout=subprocess.PIPE, shell=True)
+        if res == 0 and speak:
             ws.emit(Message("speak", {
-                'utterance': "Skills Updated. Mycroft is ready"}))
+                'utterance': mycroft.dialog.get("skills updated")}))
         elif not connected():
             ws.emit(Message("speak", {
-                'utterance': "Check your network connection"}))
+                'utterance': mycroft.dialog.get("no network connection")}))
+        elif res != 0:
+            ws.emit(Message("speak", {
+                'utterance': mycroft.dialog.get(
+                             "sorry I couldn't install default skills")}))
 
     else:
         logger.error("Unable to invoke Mycroft Skill Manager: " + MSM_BIN)
@@ -78,14 +87,15 @@ def install_default_skills(speak=True):
 def skills_manager(message):
     global skills_manager_timer, ws
 
-    if skills_manager_timer is None:
-        # TODO: Localization support
-        ws.emit(
-            Message("speak", {'utterance': "Checking for Updates"}))
+    if connected():
+        if skills_manager_timer is None:
+            ws.emit(
+                Message("speak", {'utterance':
+                        mycroft.dialog.get("checking for updates")}))
 
-    # Install default skills and look for updates via Github
-    logger.debug("==== Invoking Mycroft Skill Manager: " + MSM_BIN)
-    install_default_skills(False)
+        # Install default skills and look for updates via Github
+        logger.debug("==== Invoking Mycroft Skill Manager: " + MSM_BIN)
+        install_default_skills(False)
 
     # Perform check again once and hour
     skills_manager_timer = Timer(3600, _skills_manager_dispatch)

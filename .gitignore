@@ -15,5 +15,5 @@ setup.py
 scripts/logs/*
 logs/*
 venv3/*
-mycroft/audio-accuracy-test/data/*
 .coverage
+mycroft/audio-accuracy-test/data/*

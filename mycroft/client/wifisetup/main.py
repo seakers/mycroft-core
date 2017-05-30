@@ -68,7 +68,7 @@ p2p_go_ht40=1
 
 network={
     ssid="MYCROFT"
-    psk="MYCROFT1"
+    psk="12345678"
     proto=RSN
     key_mgmt=WPA-PSK
     pairwise=CCMP
@@ -79,7 +79,7 @@ network={
 
 network={
     ssid="MYCROFT"
-    psk="MYCROFT1"
+    psk="12345678"
     proto=RSN
     key_mgmt=WPA-PSK
     pairwise=CCMP
@@ -273,6 +273,7 @@ class WiFi:
 
         # This event is similar to the above, but resets the wifi
         self.ws.on('mycroft.wifi.reset', self.reset)
+
         # an event to enable SSH
         self.ws.on('mycroft.enable.ssh', self.ssh_enable)
         self.ws.on('mycroft.disable.ssh', self.ssh_disable)
@@ -308,7 +309,7 @@ class WiFi:
         self._speak_and_show(
             prefix + " Use your mobile device or computer to "
                      "connect to the wifi network "
-                     "'MYCROFT';  Then enter the uppercase "
+                     "'MYCROFT';  Then enter the "
                      "password " + passwordSpelled,
             self.ap.password)
 
