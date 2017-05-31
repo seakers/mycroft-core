@@ -230,7 +230,7 @@ def main():
     # Kick off loading of skills
     ws.once('open', _load_skills)
     ws.run_forever()
-
+    
 
 if __name__ == "__main__":
     try:

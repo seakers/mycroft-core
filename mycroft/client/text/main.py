@@ -41,11 +41,16 @@ from mycroft.tts import TTSFactory                          # nopep8
 from mycroft.util import get_ipc_directory                  # nopep8
 from mycroft.util.log import getLogger                      # nopep8
 from mycroft.configuration import ConfigurationManager      # nopep8
+from mycroft.connection.daphne import DaphneWebsocketClient
+import websocket
+import requests
 
 tts = None
 ws = None
 mutex = Lock()
 logger = getLogger("CLIClient")
+
+config = ConfigurationManager.get().get("daphne").get("http")
 
 utterances = []
 chat = []   # chat history, oldest at the lowest index
@@ -252,10 +257,19 @@ def handle_speak(event):
     global chat
     global tts
     mutex.acquire()
+    
+    port = config.get("port")
+    host = config.get("host")
+    key = config.get("key")
+    url = 'http://' + host +':'+ str(port) +'/api/ifeed/update-system-response/'
+    utterance = event.data.get('utterance')
+    requests.post(url,data={'utterance':utterance,'key':key})
+    
+    
     if not bQuiet:
         ws.emit(Message("recognizer_loop:audio_output_start"))
     try:
-        utterance = event.data.get('utterance')
+        
         if bSimple:
             print(">> " + utterance)
         else:
@@ -650,7 +664,7 @@ def main(stdscr):
     scr = stdscr
     init_screen()
 
-    ws = WebsocketClient()
+    
     ws.on('speak', handle_speak)
     event_thread = Thread(target=connect)
     event_thread.setDaemon(True)
@@ -771,14 +785,17 @@ def main(stdscr):
         scr.refresh()
         scr = None
         pass
-
+    
+    
 
 def simple_cli():
     global ws
-    ws = WebsocketClient()
+        
     event_thread = Thread(target=connect)
     event_thread.setDaemon(True)
     event_thread.start()
+    
+
     try:
         while True:
             # Sleep for a while so all the output that results
@@ -796,6 +813,7 @@ def simple_cli():
         logger.exception(e)
         event_thread.exit()
         sys.exit()
+        
 
 # Find the correct log path relative to this script
 scriptPath = os.path.dirname(os.path.realpath(__file__))
@@ -812,7 +830,32 @@ start_log_monitor("/var/log/mycroft-speech-client.log")
 # Monitor IPC file containing microphone level info
 start_mic_monitor(os.path.join(get_ipc_directory(), "mic_level"))
 
+
+
+
+
 if __name__ == "__main__":
+    global ws
+    ws = WebsocketClient()
+    
+    # Create a new web socket connection
+    daphneWS = DaphneWebsocketClient()
+    daphneWS.set_mycroft_ws(ws)
+    
+    def emit_message_mycroft(ws,message):
+        ws.emit(Message("recognizer_loop:utterance",
+                {'utterances': [message],
+                'lang': 'en-us'}))
+        chat.append(message)
+    
+    # When a message is received through web socket, emit the message as an utterance
+    daphneWS.on("message",emit_message_mycroft)
+    
+    # Run a separate thread indefinitely as a web socket listener
+    daphne_thread = Thread(target=daphneWS.run_forever)
+    daphne_thread.setDaemon(True)
+    daphne_thread.start()
+    
     if bSimple:
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
@@ -822,3 +865,4 @@ if __name__ == "__main__":
         curses.wrapper(main)
         curses.endwin()
         save_settings()
+    

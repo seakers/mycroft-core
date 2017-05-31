@@ -47,9 +47,11 @@ def main():
     routes = [
         (route, WebsocketEventHandler)
     ]
+    
     application = web.Application(routes, **settings)
     application.listen(port, host)
     ioloop.IOLoop.instance().start()
+
 
 
 if __name__ == "__main__":

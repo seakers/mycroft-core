@@ -17,3 +17,5 @@ logs/*
 venv3/*
 .coverage
 mycroft/audio-accuracy-test/data/*
+*.DS_Store
+mycroft/skills/daphne-skills/
