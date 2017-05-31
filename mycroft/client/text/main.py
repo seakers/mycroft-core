@@ -199,9 +199,10 @@ def handle_speak(event):
     
     port = config.get("port")
     host = config.get("host")
+    key = config.get("key")
     url = 'http://' + host +':'+ str(port) +'/api/ifeed/update-system-response/'
     utterance = event.data.get('utterance')
-    requests.post(url,data={'utterance':utterance})
+    requests.post(url,data={'utterance':utterance,'key':key})
     
     
     if not bQuiet:
@@ -702,19 +703,20 @@ if __name__ == "__main__":
     global ws
     ws = WebsocketClient()
     
+    # Create a new web socket connection
     daphneWS = DaphneWebsocketClient()
     daphneWS.set_mycroft_ws(ws)
-    
     
     def emit_message_mycroft(ws,message):
         ws.emit(Message("recognizer_loop:utterance",
                 {'utterances': [message],
                 'lang': 'en-us'}))
         chat.append(message)
-        
+    
+    # When a message is received through web socket, emit the message as an utterance
     daphneWS.on("message",emit_message_mycroft)
     
-    
+    # Run a separate thread indefinitely as a web socket listener
     daphne_thread = Thread(target=daphneWS.run_forever)
     daphne_thread.setDaemon(True)
     daphne_thread.start()
